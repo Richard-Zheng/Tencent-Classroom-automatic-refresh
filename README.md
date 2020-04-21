@@ -6,7 +6,7 @@ A [tampermonkey](https://www.tampermonkey.net/) script for automatically refresh
 
 1. Use a modern web browser(ie Chrome or Firefox)
 2. Install tampermonkey plugin and enable it
-3. Open the [raw JavaScript file](https://github.com/Richard-Zheng/Tencent-Classroom-automatic-refresh/raw/master/Tencent-Classroom-automatic-refresh.user.js), then Click "Install"
+3. Open the [raw JavaScript file](https://github.com/Richard-Zheng/Tencent-Classroom-automatic-refresh/raw/master/Tencent-Classroom-automatic-refresh.user.js), then click "Install"
 4. Refresh the web page
 
 ## Coming soon

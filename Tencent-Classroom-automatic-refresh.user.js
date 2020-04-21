@@ -15,7 +15,7 @@ var lastpage = false;
 
 (function() {
     'use strict';
-    //wait for load complete
+    //wait for loading complete
     setTimeout(() => {
         //create checkbox
         var oCheckbox=document.createElement("input");
@@ -23,7 +23,7 @@ var lastpage = false;
         oCheckbox.setAttribute("type","checkbox");
         oCheckbox.setAttribute("id","enable-auto-reload");
         if (GM_getValue('enableplugin')  == null) {
-            GM_setValue('enableplugin', false);  //init value
+            GM_setValue('enableplugin', false);  //init value by default
         }
         oCheckbox.checked = GM_getValue('enableplugin');
         oCheckbox.onclick = function setEnable() {
@@ -39,6 +39,33 @@ var lastpage = false;
 
         //auto click next
         if (GM_getValue('enableplugin')) {
+            function toForward() {
+                //get buttons
+                var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
+                var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
+
+                //check for first/last page
+                if (prev.length == 0) {
+                    firstpage = true;
+                } else if (next.length == 0) {
+                    lastpage = true;
+                }
+
+                //alert("Forw " + firstpage);
+                if (!firstpage && GM_getValue('enableplugin')) {
+                    prev[0].click();
+                    setTimeout(() => {
+                        toForward();  //loop the function
+                    }, 1000);
+                } else if (firstpage && GM_getValue('enableplugin')) {
+                    setTimeout(() => {
+                        firstpage = false;
+                        lastpage = false;
+                        toNext();
+                        //next[0].click();
+                    }, 1000);
+                }
+            }
             function toNext() {
                 //get buttons
                 var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
@@ -51,10 +78,18 @@ var lastpage = false;
                     lastpage = true;
                 }
 
+                //alert("Next " + lastpage);
                 if (!lastpage && GM_getValue('enableplugin')) {
                     next[0].click();
                     setTimeout(() => {
                         toNext();  //loop the function
+                    }, 1000);
+                } else if (lastpage && GM_getValue('enableplugin')) {
+                    setTimeout(() => {
+                        firstpage = false;
+                        lastpage = false;
+                        toForward();
+                        //prev[0].click();
                     }, 1000);
                 }
             }
@@ -62,5 +97,5 @@ var lastpage = false;
             toNext();
         }
     }, 1000);
-    
+
 })();
