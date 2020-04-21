@@ -62,7 +62,6 @@ var lastpage = false;
                         firstpage = false;
                         lastpage = false;
                         toNext();
-                        //next[0].click();
                     }, 1000);
                 }
             }
@@ -89,7 +88,6 @@ var lastpage = false;
                         firstpage = false;
                         lastpage = false;
                         toForward();
-                        //prev[0].click();
                     }, 1000);
                 }
             }
