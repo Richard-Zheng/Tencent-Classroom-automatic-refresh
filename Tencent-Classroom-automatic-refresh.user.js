@@ -10,17 +10,17 @@
 // @grant   GM_getValue
 // @grant   GM_setValue
 // ==/UserScript==
-var firstpage = false;
-var lastpage = false;
-var tabfocus = true;
+var isFirstPage = false;
+var isLastPage = false;
+var isTabInFocus = true;
 
 (function() {
     'use strict';
     document.addEventListener("visibilitychange", function() {
         if (document.visibilityState == "hidden") {
-            tabfocus = false;
+            isTabInFocus = false;
         } else {
-            tabfocus = true;
+            isTabInFocus = true;
         }
     });
     // 请求通知权限
@@ -33,19 +33,19 @@ var tabfocus = true;
         });
     });
 
-    //wait for loading complete
+    // wait for loading complete
     setTimeout(() => {
-        //create checkbox
+        // create checkbox
         var oCheckbox=document.createElement("input");
         var myText=document.createTextNode("启用自动刷新");
         oCheckbox.setAttribute("type","checkbox");
         oCheckbox.setAttribute("id","enable-auto-reload");
-        if (GM_getValue('enableplugin')  == null) {
-            GM_setValue('enableplugin', false);  //init value by default
+        if (GM_getValue('isPluginEnabled')  == null) {
+            GM_setValue('isPluginEnabled', false);  // init value by default
         }
-        oCheckbox.checked = GM_getValue('enableplugin');
+        oCheckbox.checked = GM_getValue('isPluginEnabled');
         oCheckbox.onclick = function setEnable() {
-            GM_setValue('enableplugin', oCheckbox.checked);
+            GM_setValue('isPluginEnabled', oCheckbox.checked);
 
             if (oCheckbox.checked == true) {
                 location.reload();
@@ -55,58 +55,58 @@ var tabfocus = true;
         mydiv.appendChild(oCheckbox);
         mydiv.appendChild(myText);
 
-        //auto click next
-        if (GM_getValue('enableplugin')) {
-
-            function turnPage(direction) { //direction : 0 for forward, 1 for next 
-                //get buttons
+        if (GM_getValue('isPluginEnabled')) {
+            // check living class and auto refresh
+            function turnPage(direction) { // direction: 0 for forward, 1 for next 
+                // get buttons
                 var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
                 var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
 
-                var need_change_direction = false;
-                //check for first/last page
+                var needChangeDirection = false;
+                // check for first/last page
                 if (prev.length == 0) {
-                    firstpage = true;
+                    isFirstPage = true;
                     if (direction == 0) {
-                        need_change_direction = true;
+                        needChangeDirection = true;
                     }
                 } else if (next.length == 0) {
-                    lastpage = true;
+                    isLastPage = true;
                     if (direction == 1) {
-                        need_change_direction = true;
+                        needChangeDirection = true;
                     }
                 }
 
-                //check living class
-                var livingclass = document.getElementsByClassName("live-tag-ctn");
-                for (var i = 0; i < livingclass.length; i++) {
-                    var tittle = livingclass[i].previousElementSibling;
-                    if (tabfocus && window.Notification && Notification.permission === "granted") {
-                        var n = new Notification("检测到有正在直播的课程", {body: tittle.innerHTML});
-                        var tabbutton = livingclass[i].parentElement;
-                        tabbutton.click();
-                        //Here has some issues, I will fix it later.
-                        //need delay
-                        var taskbutton = document.getElementsByClassName("live-link js-open-tencent")[0];
-                        taskbutton.click();
+                // check living class
+                var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
+                for (var i = 0; i < classIsLivingTag.length; i++) {
+                    var classTittle = classIsLivingTag[i].previousElementSibling;
+                    if (isTabInFocus && window.Notification && Notification.permission === "granted") {
+                        var n = new Notification("检测到有正在直播的课程", {body: classTittle.innerHTML});
+                        var classTabButton = classIsLivingTag[i].parentElement;
+                        classTabButton.click();
+                        // Here has some issues, I will fix it later.
+                        // need delay
+                        var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
+                        enteringClassroomButton.click();
                     }
                 }
 
-                if (GM_getValue('enableplugin')) {
-                    if (!need_change_direction) {
+                // turn the page
+                if (GM_getValue('isPluginEnabled')) {
+                    if (!needChangeDirection) {
                         if (direction == 0) {
                             prev[0].click();
                         } else {
                             next[0].click();
                         }
                         setTimeout(() => {
-                            turnPage(direction);  //loop the function
+                            turnPage(direction);  // loop the function
                         }, 1000);
                     } else {
                         setTimeout(() => {
-                            firstpage = false;
-                            lastpage = false;
-                            turnPage(!direction); //change the direction
+                            isFirstPage = false;
+                            isLastPage = false;
+                            turnPage(!direction); // change the direction
                         }, 1000);
                     }
                 }
@@ -117,8 +117,3 @@ var tabfocus = true;
     }, 1000);
 
 })();
-
-function showNotifi(status,str) {
-    console.log(status); // 仅当值为 "granted" 时显示通知
-    var n = new Notification("腾讯课堂", {body: str}); // 显示通知
-}
