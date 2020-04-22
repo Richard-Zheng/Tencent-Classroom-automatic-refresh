@@ -84,10 +84,12 @@ var isTabInFocus = true;
                         var n = new Notification("检测到有正在直播的课程", {body: classTittle.innerHTML});
                         var classTabButton = classIsLivingTag[i].parentElement;
                         classTabButton.click();
-                        // Here has some issues, I will fix it later.
-                        // need delay
                         var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
-                        enteringClassroomButton.click();
+                        (function(enteringClassroomButton){//闭包
+                            setTimeout(function(){
+                                enteringClassroomButton.click();
+                            },1000)		
+                        })(enteringClassroomButton);
                     }
                 }
 
