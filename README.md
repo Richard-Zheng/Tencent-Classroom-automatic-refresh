@@ -10,7 +10,17 @@ A [tampermonkey](https://www.tampermonkey.net/) script for automatically refresh
 4. Refresh the web page
 5. Tick the checkbox under the search box
 
-## Coming soon
+## Features (when the focus is on the tab)
 
-- Notice when a teacher starts class
+- Notice when a teacher starts living class
 - Automatically enter the classroom
+
+## Notice
+
+This is just a beta version. You may encounter unexpected problems during use. If you encounter any problems, you are welcome to [submit issues](https://github.com/Richard-Zheng/Tencent-Classroom-automatic-refresh/issues).
+
+I have just started learning Javascript, and some code writing may not be standard enough. Please excuse me.
+
+## Compatibility
+
+Works well on Chrome 81.0.4044.122 and macOS 10.15.4
