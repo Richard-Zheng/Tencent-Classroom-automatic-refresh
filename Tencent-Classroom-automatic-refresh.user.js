@@ -15,6 +15,16 @@ var lastpage = false;
 
 (function() {
     'use strict';
+    // 请求通知权限
+    window.addEventListener('load', function () {
+        Notification.requestPermission(function (status) {
+            // 这将使我们能在 Chrome/Safari 中使用 Notification.permission
+            if (Notification.permission !== status) {
+                Notification.permission = status;
+            }
+        });
+    });
+
     //wait for loading complete
     setTimeout(() => {
         //create checkbox
@@ -39,7 +49,8 @@ var lastpage = false;
 
         //auto click next
         if (GM_getValue('enableplugin')) {
-            function toForward() {
+
+            function turnPage(direction) { //direction : 0 for forward, 1 for next 
                 //get buttons
                 var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
                 var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
@@ -51,48 +62,39 @@ var lastpage = false;
                     lastpage = true;
                 }
 
-                //alert("Forw " + firstpage);
-                if (!firstpage && GM_getValue('enableplugin')) {
-                    prev[0].click();
-                    setTimeout(() => {
-                        toForward();  //loop the function
-                    }, 1000);
-                } else if (firstpage && GM_getValue('enableplugin')) {
-                    setTimeout(() => {
-                        firstpage = false;
-                        lastpage = false;
-                        toNext();
-                    }, 1000);
-                }
-            }
-            function toNext() {
-                //get buttons
-                var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
-                var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
-
-                //check for first/last page
-                if (prev.length == 0) {
-                    firstpage = true;
-                } else if (next.length == 0) {
-                    lastpage = true;
-                }
-
-                //alert("Next " + lastpage);
-                if (!lastpage && GM_getValue('enableplugin')) {
-                    next[0].click();
-                    setTimeout(() => {
-                        toNext();  //loop the function
-                    }, 1000);
-                } else if (lastpage && GM_getValue('enableplugin')) {
-                    setTimeout(() => {
-                        firstpage = false;
-                        lastpage = false;
-                        toForward();
-                    }, 1000);
+                if (GM_getValue('enableplugin')) {
+                    if (direction == 0) { //to forward page
+                        if (!firstpage) {
+                            prev[0].click();
+                            setTimeout(() => {
+                                turnPage(direction);  //loop the function
+                            }, 1000);
+                        } else if (firstpage) {
+                            setTimeout(() => {
+                                firstpage = false;
+                                lastpage = false;
+                                turnPage(!direction); //change the direction
+                            }, 1000);
+                        }
+                    } else if (direction == 1) { //to next page
+                        if (!lastpage) {
+                            next[0].click();
+                            setTimeout(() => {
+                                turnPage(direction);  //loop the function
+                            }, 1000);
+                        } else if (lastpage) {
+                            setTimeout(() => {
+                                firstpage = false;
+                                lastpage = false;
+                                turnPage(!direction); //change the direction
+                            }, 1000);
+                        }
+                    }
+                    
                 }
             }
 
-            toNext();
+            turnPage(1);
         }
     }, 1000);
 
