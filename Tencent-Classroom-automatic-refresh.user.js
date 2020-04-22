@@ -80,9 +80,15 @@ var tabfocus = true;
                 //check living class
                 var livingclass = document.getElementsByClassName("live-tag-ctn");
                 for (var i = 0; i < livingclass.length; i++) {
-                    var p = livingclass[i].previousElementSibling;
-                    if (window.Notification && Notification.permission === "granted") {
-                        var n = new Notification("检测到有正在直播的课程", {body: p.innerHTML});
+                    var tittle = livingclass[i].previousElementSibling;
+                    if (tabfocus && window.Notification && Notification.permission === "granted") {
+                        var n = new Notification("检测到有正在直播的课程", {body: tittle.innerHTML});
+                        var tabbutton = livingclass[i].parentElement;
+                        tabbutton.click();
+                        //Here has some issues, I will fix it later.
+                        //need delay
+                        var taskbutton = document.getElementsByClassName("live-link js-open-tencent")[0];
+                        taskbutton.click();
                     }
                 }
 
