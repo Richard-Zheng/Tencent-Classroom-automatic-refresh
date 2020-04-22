@@ -12,9 +12,17 @@
 // ==/UserScript==
 var firstpage = false;
 var lastpage = false;
+var tabfocus = true;
 
 (function() {
     'use strict';
+    document.addEventListener("visibilitychange", function() {
+        if (document.visibilityState == "hidden") {
+            tabfocus = false;
+        } else {
+            tabfocus = true;
+        }
+    });
     // 请求通知权限
     window.addEventListener('load', function () {
         Notification.requestPermission(function (status) {
@@ -69,6 +77,15 @@ var lastpage = false;
                     }
                 }
 
+                //check living class
+                var livingclass = document.getElementsByClassName("live-tag-ctn");
+                for (var i = 0; i < livingclass.length; i++) {
+                    var p = livingclass[i].previousElementSibling;
+                    if (window.Notification && Notification.permission === "granted") {
+                        var n = new Notification("检测到有正在直播的课程", {body: p.innerHTML});
+                    }
+                }
+
                 if (GM_getValue('enableplugin')) {
                     if (!need_change_direction) {
                         if (direction == 0) {
@@ -94,3 +111,8 @@ var lastpage = false;
     }, 1000);
 
 })();
+
+function showNotifi(status,str) {
+    console.log(status); // 仅当值为 "granted" 时显示通知
+    var n = new Notification("腾讯课堂", {body: str}); // 显示通知
+}
