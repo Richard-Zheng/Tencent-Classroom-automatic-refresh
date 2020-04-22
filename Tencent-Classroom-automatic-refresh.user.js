@@ -55,42 +55,37 @@ var lastpage = false;
                 var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
                 var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
 
+                var need_change_direction = false;
                 //check for first/last page
                 if (prev.length == 0) {
                     firstpage = true;
+                    if (direction == 0) {
+                        need_change_direction = true;
+                    }
                 } else if (next.length == 0) {
                     lastpage = true;
+                    if (direction == 1) {
+                        need_change_direction = true;
+                    }
                 }
 
                 if (GM_getValue('enableplugin')) {
-                    if (direction == 0) { //to forward page
-                        if (!firstpage) {
+                    if (!need_change_direction) {
+                        if (direction == 0) {
                             prev[0].click();
-                            setTimeout(() => {
-                                turnPage(direction);  //loop the function
-                            }, 1000);
-                        } else if (firstpage) {
-                            setTimeout(() => {
-                                firstpage = false;
-                                lastpage = false;
-                                turnPage(!direction); //change the direction
-                            }, 1000);
-                        }
-                    } else if (direction == 1) { //to next page
-                        if (!lastpage) {
+                        } else {
                             next[0].click();
-                            setTimeout(() => {
-                                turnPage(direction);  //loop the function
-                            }, 1000);
-                        } else if (lastpage) {
-                            setTimeout(() => {
-                                firstpage = false;
-                                lastpage = false;
-                                turnPage(!direction); //change the direction
-                            }, 1000);
                         }
+                        setTimeout(() => {
+                            turnPage(direction);  //loop the function
+                        }, 1000);
+                    } else {
+                        setTimeout(() => {
+                            firstpage = false;
+                            lastpage = false;
+                            turnPage(!direction); //change the direction
+                        }, 1000);
                     }
-                    
                 }
             }
 
