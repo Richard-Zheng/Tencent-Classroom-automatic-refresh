@@ -55,67 +55,79 @@ var isTabInFocus = true;
         mydiv.appendChild(oCheckbox);
         mydiv.appendChild(myText);
 
-        if (GM_getValue('isPluginEnabled')) {
-            // check living class and auto refresh
-            function turnPage(direction) { // direction: 0 for forward, 1 for next 
-                // get buttons
-                var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
-                var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
-
-                var needChangeDirection = false;
-                // check for first/last page
-                if (prev.length == 0) {
-                    isFirstPage = true;
-                    if (direction == 0) {
-                        needChangeDirection = true;
-                    }
-                } else if (next.length == 0) {
-                    isLastPage = true;
-                    if (direction == 1) {
-                        needChangeDirection = true;
-                    }
+        // check living class
+        var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
+        function traverseLivingClass(i) {
+            clickLivingClassTab(classIsLivingTag).then(function() {
+                var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
+                enteringClassroomButton.click();
+                if (i < classIsLivingTag.length) {
+                    traverseLivingClass(i + 1);
+                } else {
+                    turnPage(1);
                 }
+            })
+        }
 
-                // check living class
-                var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
-                for (var i = 0; i < classIsLivingTag.length; i++) {
-                    var classTittle = classIsLivingTag[i].previousElementSibling;
-                    if (isTabInFocus && window.Notification && Notification.permission === "granted") {
-                        var n = new Notification("检测到有正在直播的课程", {body: classTittle.innerHTML});
-                        var classTabButton = classIsLivingTag[i].parentElement;
-                        classTabButton.click();
-                        var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
-                        (function(enteringClassroomButton){//闭包
-                            setTimeout(function(){
-                                enteringClassroomButton.click();
-                            },1000)		
-                        })(enteringClassroomButton);
-                    }
-                }
-
-                // turn the page
-                if (GM_getValue('isPluginEnabled')) {
-                    if (!needChangeDirection) {
-                        if (direction == 0) {
-                            prev[0].click();
-                        } else {
-                            next[0].click();
-                        }
-                        setTimeout(() => {
-                            turnPage(direction);  // loop the function
-                        }, 1000);
-                    } else {
-                        setTimeout(() => {
-                            isFirstPage = false;
-                            isLastPage = false;
-                            turnPage(!direction); // change the direction
-                        }, 1000);
-                    }
-                }
-            }
-
+        if (classIsLivingTag.length != 0) {
+            traverseLivingClass(0);
+        } else {
             turnPage(1);
         }
+        
     }, 1000);
-
 })();
+
+function clickLivingClassTab(classIsLivingTag) {
+    return new Promise((resolve, reject) => {
+        var classTittle = classIsLivingTag[i].previousElementSibling;
+        if (isTabInFocus && window.Notification && Notification.permission === "granted") {
+            var n = new Notification("检测到有正在直播的课程", {body: classTittle.innerHTML});
+            var classTabButton = classIsLivingTag[i].parentElement;
+            classTabButton.click();
+            setTimeout(() => {
+                resolve();
+            }, 1000);
+        }
+    });
+}
+
+function turnPage(direction) { // direction: 0 for forward, 1 for next 
+    // get buttons
+    var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
+    var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
+
+    var needChangeDirection = false;
+    // check for first/last page
+    if (prev.length == 0) {
+        isFirstPage = true;
+        if (direction == 0) {
+            needChangeDirection = true;
+        }
+    } else if (next.length == 0) {
+        isLastPage = true;
+        if (direction == 1) {
+            needChangeDirection = true;
+        }
+    }
+
+    // turn the page
+    if (GM_getValue('isPluginEnabled')) {
+        if (!needChangeDirection) {
+            if (direction == 0) {
+                prev[0].click();
+            } else {
+                next[0].click();
+            }
+            setTimeout(() => {
+                turnPage(direction);  // loop the function
+            }, 1000);
+        } else {
+            setTimeout(() => {
+                isFirstPage = false;
+                isLastPage = false;
+                turnPage(!direction); // change the direction
+            }, 1000);
+        }
+    }
+}
