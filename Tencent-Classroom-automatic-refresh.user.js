@@ -105,7 +105,7 @@ function traverseLivingClass(classIsLivingTag, i) {
 }
 
 function clickLivingClassTab(classIsLivingTag, i) {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         var classTabButton = classIsLivingTag[i].parentElement;
         classTabButton.click();
         setTimeout(() => {
@@ -117,7 +117,7 @@ function clickLivingClassTab(classIsLivingTag, i) {
 function turnPage(prev, next, direction) { // direction: 0 for forward, 1 for next
     return new Promise(function (resolve) {
         // turn the page
-        if (direction === 0) {
+        if (direction == 0) { // use "===" caused some problems: direction is a boolean value by default
             prev[0].click();
         } else {
             next[0].click();
