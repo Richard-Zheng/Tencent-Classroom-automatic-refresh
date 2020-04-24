@@ -110,14 +110,15 @@ function clickLivingClassTab(classIsLivingTag, i) {
         classTabButton.click();
         setTimeout(() => {
             resolve();
-        }, 1000);
+        }, 500); // issue: time not enough for 2 or more living lessons
+                         // will incorrectly open class on the next page
     });
 }
 
 function turnPage(prev, next, direction) { // direction: 0 for forward, 1 for next
     return new Promise(function (resolve) {
         // turn the page
-        if (direction == 0) { // use "===" caused some problems: direction is a boolean value by default
+        if (direction == 0) { // issue: use "===" caused some problems: direction is a boolean value by default
             prev[0].click();
         } else {
             next[0].click();
