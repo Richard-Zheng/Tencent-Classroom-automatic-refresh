@@ -17,9 +17,9 @@ A [tampermonkey](https://www.tampermonkey.net/) script for automatically refresh
 
 ## Notice
 
-This is just a beta version. You may encounter unexpected problems during use. If you encounter any problems, you are welcome to [submit issues](https://github.com/Richard-Zheng/Tencent-Classroom-automatic-refresh/issues).
+This is just a beta version. If you encounter any problems, please go to [submit issues](https://github.com/Richard-Zheng/Tencent-Classroom-automatic-refresh/issues).
 
-I have just started learning Javascript, and some code writing may not be standard enough. Please excuse me.
+I have just started learning JavaScript, and some code writing may not be standard enough. Please excuse me.
 
 ## Compatibility
 
