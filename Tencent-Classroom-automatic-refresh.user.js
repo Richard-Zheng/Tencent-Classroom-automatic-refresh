@@ -124,7 +124,7 @@ function traverseLivingClass(classIsLivingTag, i) {
 
             // control loop
             if (i < classIsLivingTag.length - 1) {
-                traverseLivingClass(i + 1);
+                traverseLivingClass(classIsLivingTag,i + 1);
             } else {
                 resolve(); // loop complete, callback
             }
