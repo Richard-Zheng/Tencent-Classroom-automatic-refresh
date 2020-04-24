@@ -70,7 +70,14 @@ var isTabInFocus = true;
                     direction = !direction;
                 }
 
-                turnPage(prev, next, direction).then(function () {
+                // turn the page
+                if (direction == 0) { // issue: use "===" caused some problems: direction is a boolean value by default
+                    prev[0].click();
+                } else {
+                    next[0].click();
+                }
+
+                detectLoadingCompletion().then(function () {
                     autoTurnPage(direction);
                 })
             });
@@ -125,6 +132,7 @@ function traverseLivingClass(classIsLivingTag, i) {
     })
 }
 
+// this function is not in use
 function clickLivingClassTab(classIsLivingTag, i) {
     return new Promise((resolve) => {
         var classTabButton = classIsLivingTag[i].parentElement;
@@ -136,6 +144,7 @@ function clickLivingClassTab(classIsLivingTag, i) {
     });
 }
 
+// this function is not in use
 function turnPage(prev, next, direction) { // direction: 0 for forward, 1 for next
     return new Promise(function (resolve) {
         // turn the page
@@ -144,8 +153,5 @@ function turnPage(prev, next, direction) { // direction: 0 for forward, 1 for ne
         } else {
             next[0].click();
         }
-        setTimeout(() => {
-            resolve();
-        }, 1000);
     })
 }
