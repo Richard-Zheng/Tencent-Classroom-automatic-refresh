@@ -60,20 +60,20 @@ var isTabInFocus = true;
 
             // check living class
             var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
-            traverseLivingClass(classIsLivingTag, 0);
+            traverseLivingClass(classIsLivingTag, 0).then(() => {
+                // get buttons
+                var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
+                var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
 
-            // get buttons
-            var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
-            var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
+                // change direction if need
+                if ((prev.length === 0 && direction == 0) || (next.length === 0 && direction == 1)) {
+                    direction = !direction;
+                }
 
-            // change direction if need
-            if ((prev.length === 0 && direction == 0) || (next.length === 0 && direction == 1)) {
-                direction = !direction;
-            }
-
-            turnPage(prev, next, direction).then(function () {
-                autoTurnPage(direction);
-            })
+                turnPage(prev, next, direction).then(function () {
+                    autoTurnPage(direction);
+                })
+            });
         }
 
         autoTurnPage(1);
@@ -81,26 +81,47 @@ var isTabInFocus = true;
     }, 1000);
 })();
 
+function detectLoadingCompletion() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            setInterval(() => {
+                var processingIcon = document.getElementsByClassName("im-statusbox-icon");
+                if (processingIcon.length === 0) {
+                    resolve();
+                }
+            }, 500);
+        }, 500)
+    })
+}
+
 function traverseLivingClass(classIsLivingTag, i) {
-    if (classIsLivingTag.length === 0) {
-        return;
-    }
-
-    // send notification
-    var classTittle = classIsLivingTag[i].previousElementSibling;
-    if (window.Notification && Notification.permission === "granted") {
-        var n = new Notification("检测到有正在直播的课程", {body: classTittle.innerHTML});
-    }
-
-    clickLivingClassTab(classIsLivingTag, i).then(function() {
-        // enter the class
-        var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
-        enteringClassroomButton.click();
-
-        // control loop
-        if (i < classIsLivingTag.length) {
-            traverseLivingClass(i + 1);
+    return new Promise((resolve) => {
+        if (classIsLivingTag.length === 0) {
+            resolve();
         }
+
+        // send notification
+        var classTittle = classIsLivingTag[i].previousElementSibling;
+        if (window.Notification && Notification.permission === "granted") {
+            var n = new Notification("检测到有正在直播的课程", {body: classTittle.innerHTML});
+        }
+
+        // click the tab
+        var classTabButton = classIsLivingTag[i].parentElement;
+        classTabButton.click();
+
+        detectLoadingCompletion().then(function () {
+            // enter the class
+            var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
+            enteringClassroomButton.click();
+
+            // control loop
+            if (i < classIsLivingTag.length) {
+                traverseLivingClass(i + 1);
+            } else {
+                resolve(); // loop complete, callback
+            }
+        })
     })
 }
 
