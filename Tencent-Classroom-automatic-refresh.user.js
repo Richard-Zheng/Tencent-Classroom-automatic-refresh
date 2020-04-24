@@ -67,7 +67,7 @@ var isTabInFocus = true;
             var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
 
             // change direction if need
-            if ((prev.length === 0 && direction === 0) || (next.length === 0 && direction === 1)) {
+            if ((prev.length === 0 && direction == 0) || (next.length === 0 && direction == 1)) {
                 direction = !direction;
             }
 
