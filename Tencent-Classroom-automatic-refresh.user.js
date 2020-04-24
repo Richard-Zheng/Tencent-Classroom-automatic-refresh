@@ -11,6 +11,7 @@
 // @grant   GM_setValue
 // ==/UserScript==
 var isTabInFocus = true;
+var enteredClassroomID = new Set();
 
 (function() {
     'use strict';
@@ -46,7 +47,7 @@ var isTabInFocus = true;
             GM_setValue('pluginEnabled', oCheckbox.checked);
 
             if (oCheckbox.checked == true) {
-                location.reload();
+                autoTurnPage(1);
             }
         }
         var mydiv = document.getElementsByClassName("header-index-search")[0];
@@ -103,7 +104,7 @@ function detectLoadingCompletion() {
 
 function traverseLivingClass(classIsLivingTag, i) {
     return new Promise((resolve) => {
-        if (classIsLivingTag.length === 0) {
+        if (i >= classIsLivingTag.length) {
             resolve();
         }
 
@@ -120,14 +121,14 @@ function traverseLivingClass(classIsLivingTag, i) {
         detectLoadingCompletion().then(function () {
             // enter the class
             var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
-            enteringClassroomButton.click();
+            var classroomID = enteringClassroomButton.getAttribute("data-taid");
 
-            // control loop
-            if (i < classIsLivingTag.length - 1) {
-                traverseLivingClass(classIsLivingTag,i + 1);
-            } else {
-                resolve(); // loop complete, callback
+            if (!enteredClassroomID.has(classroomID)) {
+                enteredClassroomID.add(classroomID);
+                enteringClassroomButton.click();
             }
+
+            traverseLivingClass(classIsLivingTag,i + 1);
         })
     })
 }
