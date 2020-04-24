@@ -123,7 +123,7 @@ function traverseLivingClass(classIsLivingTag, i) {
             enteringClassroomButton.click();
 
             // control loop
-            if (i < classIsLivingTag.length) {
+            if (i < classIsLivingTag.length - 1) {
                 traverseLivingClass(i + 1);
             } else {
                 resolve(); // loop complete, callback
