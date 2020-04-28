@@ -54,40 +54,40 @@ var enteredClassroomID = new Set();
         mydiv.appendChild(oCheckbox);
         mydiv.appendChild(myText);
 
-        function autoTurnPage(direction) {
-            if (!GM_getValue('pluginEnabled')) {
-                return;
-            }
-
-            // check living class
-            var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
-            traverseLivingClass(classIsLivingTag, 0).then(() => {
-                // get buttons
-                var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
-                var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
-
-                // change direction if need
-                if ((prev.length === 0 && direction == 0) || (next.length === 0 && direction == 1)) {
-                    direction = !direction;
-                }
-
-                // turn the page
-                if (direction == 0) { // issue: use "===" caused some problems: direction is a boolean value by default
-                    prev[0].click();
-                } else {
-                    next[0].click();
-                }
-
-                detectLoadingCompletion().then(function () {
-                    autoTurnPage(direction);
-                })
-            });
-        }
-
         autoTurnPage(1);
         
     }, 1000);
 })();
+
+function autoTurnPage(direction) {
+    if (!GM_getValue('pluginEnabled')) {
+        return;
+    }
+
+    // check living class
+    var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
+    traverseLivingClass(classIsLivingTag, 0).then(() => {
+        // get buttons
+        var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
+        var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
+
+        // change direction if need
+        if ((prev.length === 0 && direction == 0) || (next.length === 0 && direction == 1)) {
+            direction = !direction;
+        }
+
+        // turn the page
+        if (direction == 0) { // issue: use "===" caused some problems: direction is a boolean value by default
+            prev[0].click();
+        } else {
+            next[0].click();
+        }
+
+        detectLoadingCompletion().then(function () {
+            autoTurnPage(direction);
+        })
+    });
+}
 
 function detectLoadingCompletion() {
     return new Promise((resolve) => {
