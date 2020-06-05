@@ -15,6 +15,10 @@ A [tampermonkey](https://www.tampermonkey.net/) script for automatically refresh
 - Notice when a teacher starts living class
 - Automatically enter the classroom
 
+## Known issues
+
+- Will not continue working after opening the first course page
+
 ## Notice
 
 This is just a beta version. If you encounter any problems, please go to [submit issues](https://github.com/Richard-Zheng/Tencent-Classroom-automatic-refresh/issues).

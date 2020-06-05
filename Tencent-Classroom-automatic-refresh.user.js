@@ -11,6 +11,7 @@
 // @grant   GM_setValue
 // ==/UserScript==
 var isTabInFocus = true;
+var enteredClassroomID = new Set();
 
 (function() {
     'use strict';
@@ -46,47 +47,47 @@ var isTabInFocus = true;
             GM_setValue('pluginEnabled', oCheckbox.checked);
 
             if (oCheckbox.checked == true) {
-                location.reload();
+                autoTurnPage(1);
             }
         }
         var mydiv = document.getElementsByClassName("header-index-search")[0];
         mydiv.appendChild(oCheckbox);
         mydiv.appendChild(myText);
 
-        function autoTurnPage(direction) {
-            if (!GM_getValue('pluginEnabled')) {
-                return;
-            }
-
-            // check living class
-            var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
-            traverseLivingClass(classIsLivingTag, 0).then(() => {
-                // get buttons
-                var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
-                var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
-
-                // change direction if need
-                if ((prev.length === 0 && direction == 0) || (next.length === 0 && direction == 1)) {
-                    direction = !direction;
-                }
-
-                // turn the page
-                if (direction == 0) { // issue: use "===" caused some problems: direction is a boolean value by default
-                    prev[0].click();
-                } else {
-                    next[0].click();
-                }
-
-                detectLoadingCompletion().then(function () {
-                    autoTurnPage(direction);
-                })
-            });
-        }
-
         autoTurnPage(1);
         
     }, 1000);
 })();
+
+function autoTurnPage(direction) {
+    if (!GM_getValue('pluginEnabled')) {
+        return;
+    }
+
+    // check living class
+    var classIsLivingTag = document.getElementsByClassName("live-tag-ctn");
+    traverseLivingClass(classIsLivingTag, 0).then(() => {
+        // get buttons
+        var prev = document.getElementsByClassName("tab-move-btn tab-prev-btn");
+        var next = document.getElementsByClassName("tab-move-btn tab-next-btn");
+
+        // change direction if need
+        if ((prev.length === 0 && direction == 0) || (next.length === 0 && direction == 1)) {
+            direction = !direction;
+        }
+
+        // turn the page
+        if (direction == 0) { // issue: use "===" caused some problems: direction is a boolean value by default
+            prev[0].click();
+        } else {
+            next[0].click();
+        }
+
+        detectLoadingCompletion().then(function () {
+            autoTurnPage(direction);
+        })
+    });
+}
 
 function detectLoadingCompletion() {
     return new Promise((resolve) => {
@@ -103,7 +104,7 @@ function detectLoadingCompletion() {
 
 function traverseLivingClass(classIsLivingTag, i) {
     return new Promise((resolve) => {
-        if (classIsLivingTag.length === 0) {
+        if (i >= classIsLivingTag.length) {
             resolve();
         }
 
@@ -120,14 +121,14 @@ function traverseLivingClass(classIsLivingTag, i) {
         detectLoadingCompletion().then(function () {
             // enter the class
             var enteringClassroomButton = document.getElementsByClassName("live-link js-open-tencent")[0];
-            enteringClassroomButton.click();
+            var classroomID = enteringClassroomButton.getAttribute("data-taid");
 
-            // control loop
-            if (i < classIsLivingTag.length - 1) {
-                traverseLivingClass(i + 1);
-            } else {
-                resolve(); // loop complete, callback
+            if (!enteredClassroomID.has(classroomID)) {
+                enteredClassroomID.add(classroomID);
+                enteringClassroomButton.click();
             }
+
+            traverseLivingClass(classIsLivingTag,i + 1);
         })
     })
 }
